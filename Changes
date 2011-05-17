@@ -1,4 +1,9 @@
 Revision history for Crypt-FNA-Async
 
+0.02    17/05/2011 12:20
+        POD correction
+        new internal method make_fna_object
+        modified makefile for dependency
+
 0.01    16/05/2011 12:20
         parallel encryption/decryption files on a multicore cpu using threads

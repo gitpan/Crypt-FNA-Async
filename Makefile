@@ -14,7 +14,11 @@
 #     INSTALLDIRS => q[site]
 #     NAME => q[Crypt::FNA::Async]
 #     PL_FILES => {  }
-#     PREREQ_PM => { Test::More=>q[0] }
+#     PREREQ_PM => {
+		Test::More=>q[0],
+		Crypt::FNA=>q[0],
+		threads=>q[0]
+	}
 #     VERSION_FROM => q[lib/Crypt/FNA/Async.pm]
 
 # --- MakeMaker post_initialize section:
@@ -54,11 +58,11 @@ DIRFILESEP = ^\
 DFSEP = $(DIRFILESEP)
 NAME = Crypt::FNA::Async
 NAME_SYM = Crypt_FNA_Async
-VERSION = 0.01
+VERSION = 0.02
 VERSION_MACRO = VERSION
 VERSION_SYM = 0_11
 DEFINE_VERSION = -D$(VERSION_MACRO)=\"$(VERSION)\"
-XS_VERSION = 0.01
+XS_VERSION = 0.02
 XS_VERSION_MACRO = XS_VERSION
 XS_DEFINE_VERSION = -D$(XS_VERSION_MACRO)=\"$(XS_VERSION)\"
 INST_ARCHLIB = blib\arch
@@ -254,7 +258,7 @@ RCS_LABEL = rcs -Nv$(VERSION_SYM): -q
 DIST_CP = best
 DIST_DEFAULT = tardist
 DISTNAME = Crypt-FNA-Async
-DISTVNAME = Crypt-FNA-Async-0.01
+DISTVNAME = Crypt-FNA-Async-0.02
 
 
 # --- MakeMaker macro section:
@@ -486,7 +490,7 @@ metafile : create_distdir
 	$(NOECHO) $(ECHO) Generating META.yml
 	$(NOECHO) $(ECHO) "--- #YAML:1.0" > META_new.yml
 	$(NOECHO) $(ECHO) "name:               Crypt-FNA-Async" >> META_new.yml
-	$(NOECHO) $(ECHO) "version:            0.01" >> META_new.yml
+	$(NOECHO) $(ECHO) "version:            0.02" >> META_new.yml
 	$(NOECHO) $(ECHO) "abstract:           ~" >> META_new.yml
 	$(NOECHO) $(ECHO) "author:  []" >> META_new.yml
 	$(NOECHO) $(ECHO) "license:            unknown" >> META_new.yml

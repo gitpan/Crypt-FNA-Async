@@ -23,7 +23,7 @@ package Crypt::FNA::Async;
 	use Crypt::FNA;
 # fine caricamento lib
 
-our $VERSION =  '0.01';
+our $VERSION =  '0.02';
 
 # metodi ed attributi
 
@@ -92,16 +92,8 @@ our $VERSION =  '0.01';
 		my @files_to_encrypt=@_;
 
 		#istanza oggetto FNA 
-		my $krypto=Crypt::FNA->new(
-			{
-				r=> $self->r,
-				angle =>  $self->angle,
-				square => $self->square,
-				magic => $self->magic,
-				salted => $self->salted
-			}
-		);
-	
+		my $krypto=$self->make_fna_object;
+		
 		my @thr;
 		for (@files_to_encrypt) {
 			push @thr,threads->new(sub
@@ -125,15 +117,7 @@ our $VERSION =  '0.01';
 		my @files_to_decrypt=@_;
 
 		#istanza oggetto FNA 
-		my $krypto=Crypt::FNA->new(
-			{
-				r=> $self->r,
-				angle =>  $self->angle,
-				square => $self->square,
-				magic => $self->magic,
-				salted => $self->salted
-			}
-		);
+		my $krypto=$self->make_fna_object;
 	
 		my @thr;
 		for (@files_to_decrypt) {
@@ -155,6 +139,20 @@ our $VERSION =  '0.01';
 		}
 	}	
 
+	sub make_fna_object {
+		my $self=shift;
+		my $krypto=Crypt::FNA->new(
+			{
+				r=> $self->r,
+				angle =>  $self->angle,
+				square => $self->square,
+				magic => $self->magic,
+				salted => $self->salted
+			}
+		);
+		return $krypto	
+	}
+
 1;
 
 # end subroutine
@@ -169,7 +167,7 @@ Crypt::FNA::Async
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =head1 DESCRIPTION
 
@@ -232,7 +230,7 @@ This method encrypt the input plain files to output crypted files.
 The syntax is:
 
   
-  $krypto_async->encrypt_file($name_plain_file1, $name_plain_file2,...)
+  $krypto_async->encrypt_files($name_plain_file1, $name_plain_file2,...)
   
 
 =head2 decrypt_files
@@ -243,6 +241,9 @@ The syntax is:
   
   $krypto_async->decrypt_files($name_encrypted_file1, $name_encrypted_file2,...)
   
+=head2 make_fna_object
+
+Internal use, make a fna object
 
 =head1 AUTHOR
 

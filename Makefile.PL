@@ -8,7 +8,9 @@ WriteMakefile
           'EXE_FILES' => [],
           'VERSION_FROM' => 'lib/Crypt/FNA/Async.pm',
           'PREREQ_PM' => {
-                           'Test::More' => 0
+                           'Test::More' => 0,
+                           'Crypt::FNA' => 0,
+                           'threads' => 0
                          }
         )
 ;
