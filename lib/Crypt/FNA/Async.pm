@@ -19,11 +19,16 @@ package Crypt::FNA::Async;
 # caricamento lib
 	use strict;
 	use warnings;
-	use threads qw(yield);
-	use Crypt::FNA;
+	{
+		my $can_use_FNA = eval 'use Crypt::FNA; 1';
+		if (!$can_use_FNA) {
+			print "install Crypt::FNA";
+			exit
+		}
+	}
 # fine caricamento lib
 
-our $VERSION =  '0.02';
+our $VERSION =  '0.04';
 
 # metodi ed attributi
 
@@ -95,21 +100,31 @@ our $VERSION =  '0.02';
 		my $krypto=$self->make_fna_object;
 		
 		my @thr;
-		for (@files_to_encrypt) {
-			push @thr,threads->new(sub
-		    		{
-		    			my $krypto=shift;
-		    			my $file=shift;
-		    			$krypto->encrypt_file($file,$file.'.fna');
-					threads->yield()
-				},
-				$krypto,
-				$_
-			);
+		
+		# TRY
+		my $can_use_threads = eval 'use threads qw(yield); 1';
+		if ($can_use_threads) {
+			for (@files_to_encrypt) {
+				push @thr,threads->new(sub
+					{
+						my $krypto=shift;
+						my $file_to_encrypt=shift;
+						my $file_encrypted=$file_to_encrypt.".fna";
+						$krypto->encrypt_file($file_to_encrypt,$file_encrypted);
+						threads->yield()
+					},
+					$krypto,
+					$_
+				);
+			}
+			for (@thr) {
+				$_->join()
+			}
+		# CATCH
+		} else {
+			$krypto->encrypt_file($_,$_.'.fna') for (@files_to_encrypt)
 		}
-		for (@thr) {
-			$_->join()
-		}
+
 	}
 
 	sub decrypt_files {
@@ -120,22 +135,35 @@ our $VERSION =  '0.02';
 		my $krypto=$self->make_fna_object;
 	
 		my @thr;
-		for (@files_to_decrypt) {
-			push @thr,threads->new(sub
-		    		{
-		    			my $krypto=shift;
-		    			my $file=shift;
-		    			my $filename=$file;
-		    			$filename=~ s/\.fna$//;
-		    			$krypto->decrypt_file($file,$filename);
-					threads->yield()
-				},
-				$krypto,
-				$_
-			);
-		}
-		for (@thr) {
-			$_->join()
+		
+		# TRY
+		my $can_use_threads = eval 'use threads qw(yield); 1';
+		if ($can_use_threads) {
+			for (@files_to_decrypt) {
+				push @thr,threads->new(sub
+					{
+						my $krypto=shift;
+						my $file_to_decrypt=shift;
+						my $file_decrypted=$file_to_decrypt;
+						$file_decrypted=~ s/\.fna$//;
+						$krypto->decrypt_file($file_to_decrypt,$file_decrypted);
+						threads->yield()
+					},
+					$krypto,
+					$_
+				);
+			}
+			for (@thr) {
+				$_->join()
+			}
+		# CATCH
+		} else {
+			for (@files_to_decrypt) {
+				my $file_to_decrypt=$_;
+				my $file_decrypted=$file_to_decrypt;
+				$file_decrypted=~ s/\.fna$//;
+				$krypto->decrypt_file($file_to_decrypt,$file_decrypted)
+			}
 		}
 	}	
 
@@ -167,11 +195,12 @@ Crypt::FNA::Async
 
 =head1 VERSION
 
-Version 0.02
+Version 0.04
 
 =head1 DESCRIPTION
 
-Crypt::FNA::Async allow you to parallel encrypt/decrypt on a multicore CPU (and/or hyperthreading CPU)
+Crypt::FNA::Async allow you to parallel encrypt/decrypt on a multicore CPU (and/or hyperthreading CPU).
+If threads are not supported, the computation will take place in a synchronous rather than asynchronous.
 	
 
 =head1 CONSTRUCTOR METHOD

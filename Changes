@@ -1,5 +1,9 @@
 Revision history for Crypt-FNA-Async
 
+0.04    18/05/2011 14:32
+        Added synchronous management where the threads are not supported
+	Added check Crypt::FNA
+	
 0.02    17/05/2011 12:20
         POD correction
         new internal method make_fna_object
