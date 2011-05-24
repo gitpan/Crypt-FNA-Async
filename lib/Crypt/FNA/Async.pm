@@ -19,16 +19,12 @@ package Crypt::FNA::Async;
 # caricamento lib
 	use strict;
 	use warnings;
-	{
-		my $can_use_FNA = eval 'use Crypt::FNA; 1';
-		if (!$can_use_FNA) {
-			print "install Crypt::FNA";
-			exit
-		}
-	}
+
+	our $can_use_FNA = eval 'use Crypt::FNA; 1';
+	our $can_use_threads = eval 'use threads qw(yield); 1';
 # fine caricamento lib
 
-our $VERSION =  '0.04';
+our $VERSION =  '0.08';
 
 # metodi ed attributi
 
@@ -96,13 +92,18 @@ our $VERSION =  '0.04';
 		my $self=shift;
 		my @files_to_encrypt=@_;
 
-		#istanza oggetto FNA 
-		my $krypto=$self->make_fna_object;
+		#istanza oggetto FNA
+		my $krypto;
+		if ($can_use_FNA) {
+			$krypto=$self->make_fna_object
+		} else {
+			push(@{$self->{message}},22);
+			return
+		}
 		
 		my @thr;
 		
 		# TRY
-		my $can_use_threads = eval 'use threads qw(yield); 1';
 		if ($can_use_threads) {
 			for (@files_to_encrypt) {
 				push @thr,threads->new(sub
@@ -122,7 +123,9 @@ our $VERSION =  '0.04';
 			}
 		# CATCH
 		} else {
-			$krypto->encrypt_file($_,$_.'.fna') for (@files_to_encrypt)
+			for (@files_to_encrypt) {
+				$krypto->encrypt_file($_,$_.'.fna')
+			}
 		}
 
 	}
@@ -131,13 +134,19 @@ our $VERSION =  '0.04';
 		my $self=shift;
 		my @files_to_decrypt=@_;
 
-		#istanza oggetto FNA 
-		my $krypto=$self->make_fna_object;
+		#istanza oggetto FNA
+		my $krypto;
+		if ($can_use_FNA) {
+			$krypto=$self->make_fna_object
+		} else {
+			# aggiungere codice errore 22 che informa che fna non è installato
+			push(@{$self->{message}},22);
+			return
+		}
 	
 		my @thr;
 		
 		# TRY
-		my $can_use_threads = eval 'use threads qw(yield); 1';
 		if ($can_use_threads) {
 			for (@files_to_decrypt) {
 				push @thr,threads->new(sub
@@ -178,12 +187,10 @@ our $VERSION =  '0.04';
 				salted => $self->salted
 			}
 		);
-		return $krypto	
+		return $krypto
 	}
 
-1;
-
-# end subroutine
+# end metodi ed attributi
 
 1;
 
@@ -195,7 +202,7 @@ Crypt::FNA::Async
 
 =head1 VERSION
 
-Version 0.04
+Version 0.08
 
 =head1 DESCRIPTION
 

@@ -1,5 +1,9 @@
 Revision history for Crypt-FNA-Async
 
+0.08    24/05/2011 11:44
+        fixed synchronous management where the threads are not supported
+	fixed check Crypt::FNA: return error to $self->message (code 22 - Crypt::FNA not present)
+
 0.04    18/05/2011 14:32
         Added synchronous management where the threads are not supported
 	Added check Crypt::FNA
