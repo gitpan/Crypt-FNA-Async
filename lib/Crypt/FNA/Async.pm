@@ -24,7 +24,7 @@ package Crypt::FNA::Async;
 	our $can_use_threads = eval 'use threads qw(yield); 1';
 # fine caricamento lib
 
-our $VERSION =  '0.08';
+our $VERSION =  '0.10';
 
 # metodi ed attributi
 
@@ -202,7 +202,7 @@ Crypt::FNA::Async
 
 =head1 VERSION
 
-Version 0.08
+Version 0.10
 
 =head1 DESCRIPTION
 

@@ -9,6 +9,12 @@ To install this module, run the following commands:
 	make test
 	make install
 
+	OR
+	
+	perl Buil.PL
+	build test
+	build install
+
 IMPORTANT
 
 ---> require threads!!!!! <----

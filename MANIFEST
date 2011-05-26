@@ -1,6 +1,7 @@
 Changes
 lib/Crypt/FNA/Async.pm
 Makefile.PL
+Build.PL
 MANIFEST			This list of files
 README
 t/00-load.t
